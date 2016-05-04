@@ -37,7 +37,12 @@
 
 $CREATEJS_SCRIPTS
 $SCRIPT_START
-S(document).ready(function initForMobile(){
+var canvas, stage, exportRoot;
+function init() {
+	
+	$CJS_INIT
+
+(function initForMobile(){
 	var w = window.innerWidth;
 	var h = window.innerHeight - $(stage.canvas).offset().top;
 	var cw	= $(stage.canvas).width();
@@ -51,11 +56,7 @@ S(document).ready(function initForMobile(){
 	if(createjs.Touch.isSupported() == true){
 		createjs.Touch.enable(stage)
 	}
-});
-var canvas, stage, exportRoot;
-function init() {
-	
-	$CJS_INIT
+})();
 
 }
 $PLAYSOUND
