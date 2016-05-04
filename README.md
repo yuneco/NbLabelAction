@@ -20,12 +20,10 @@ NbLabelAction.init();
 テンプレートを使用しない場合、下記の手順に従ってください：
 
 1. 新規ドキュメントから「HTML5 Canvas」を作成
-2. 適当に保存して、一旦パブリッシュ
-3. 生成されたhtmlファイルと同じ階層に「NbLabelAction.js」をコピー
-4. 生成されたhtmlを開いて、NbLabelAction.jsのscriptタグを追加
-5. Animate(Flash)に戻って、パブリッシュ設定を開く
-6. 「パブリッシュ時にHTMLファイルを上書き」のチェックを外してOK
-7. ステージのタイムライン1フレーム目のアクションに、下記をそのまま貼り付け
+1. パブリッシュ設定＞詳細を開いてhtmlのテンプレートに同梱の「template.html」を設定
+1. 適当に保存して、一旦パブリッシュ
+1. 生成されたhtmlファイルと同じ階層に「NbLabelAction.js」をコピー
+1. ステージのタイムライン1フレーム目のアクションに、下記をそのまま貼り付け
 ```javascript
 NbLabelAction.init();
 ```
