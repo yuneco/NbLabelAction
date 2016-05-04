@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 	NOTES:
 	1. All tokens are represented by '$' sign in the template.
 	2. You can write your code only wherever mentioned.
@@ -32,13 +32,11 @@
 <script src="https://code.jquery.com/jquery-1.12.3.min.js"   integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ="   crossorigin="anonymous"></script>
 <script src="NbLabelAction.js"></script>
 
-<title>main</title>
+<title>$TITLE</title>
 <!-- write your code here -->
 
-
-<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
-<script src="main.js?1462376542282"></script>
-<script>
+$CREATEJS_SCRIPTS
+$SCRIPT_START
 S(document).ready(function initForMobile(){
 	var w = window.innerWidth;
 	var h = window.innerHeight - $(stage.canvas).offset().top;
@@ -57,25 +55,16 @@ S(document).ready(function initForMobile(){
 var canvas, stage, exportRoot;
 function init() {
 	
-	
-	canvas = document.getElementById("canvas");
-	exportRoot = new lib.TemplateIphone();
-
-	stage = new createjs.Stage(canvas);
-	stage.addChild(exportRoot);
-	stage.update();
-
-	createjs.Ticker.setFPS(lib.properties.fps);
-	createjs.Ticker.addEventListener("tick", stage);
+	$CJS_INIT
 
 }
-
-</script>
+$PLAYSOUND
+$SCRIPT_END
 
 <!-- write your code here -->
 
 </head>
 <body onload="init();" style="background-color:#D4D4D4;margin:0px;">
-	<canvas id="canvas" width="375" height="667" style="background-color:#FFFFFF"></canvas>
+	<canvas id="$CANVAS_ID" width="$WT" height="$HT" style="background-color:$BG"></canvas>
 </body>
 </html>
