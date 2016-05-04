@@ -1,0 +1,67 @@
+<!doctype html>
+<!-- 
+	NbLabelAction template for iphone (and other mobile devices) 
+	2016 nekobooks.com
+-->
+<html>
+<head>
+<meta charset="utf8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"/>
+<title>main</title>
+<style>
+	body{
+		margin		:	0;
+		padding		:	0;
+		background-color:white;
+		-webkit-touch-callout: none; 
+		-webkit-user-select: none; /* Chrome, Safari, and Opera */
+		-moz-user-select: none; /* Firefox */
+		-ms-user-select: none; /* Internet Explorer */
+	}
+	#canvas{
+		display	:	block;
+		margin	:	auto;
+	}
+</style>
+<script   src="https://code.jquery.com/jquery-1.12.3.min.js"   integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ="   crossorigin="anonymous"></script>
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script src="NbLabelAction.js"></script>
+<script src="main.js"></script>
+<script>
+var canvas, stage, exportRoot;
+$(document).ready(function init() {
+
+	canvas = document.getElementById("canvas");
+	exportRoot = new lib.TemplateIphone();
+
+	stage = new createjs.Stage(canvas);
+	stage.addChild(exportRoot);
+	stage.update();
+
+	createjs.Ticker.setFPS(lib.properties.fps);
+	createjs.Ticker.addEventListener("tick", stage);
+
+	(function initForMobile(){
+		var w = window.innerWidth;
+		var h = window.innerHeight - $(stage.canvas).offset().top;
+		var cw	= $(stage.canvas).width();
+		var ch	= $(stage.canvas).height();
+		var r	= Math.min(w/cw,h/ch);
+		stage.canvas.width = cw*r;
+		stage.canvas.height = ch*r;
+		stage.scaleX		= r;
+		stage.scaleY		= r;
+		stage.update();
+		if(createjs.Touch.isSupported() == true){
+			createjs.Touch.enable(stage)
+		}
+	})();
+});
+
+</script>
+
+</head>
+<body>
+	<canvas id="canvas" width="375" height="667" style="background-color:#FFFFFF"></canvas>
+</body>
+</html>
