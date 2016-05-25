@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 	NOTES:
 	1. All tokens are represented by '$' sign in the template.
 	2. You can write your code only wherever mentioned.
@@ -33,15 +33,26 @@
 <script src="NbLabelAction.js"></script>
 <script src="extension.js"></script>
 
-<title>$TITLE</title>
+<title>main</title>
 <!-- write your code here -->
 
-$CREATEJS_SCRIPTS
-$SCRIPT_START
+
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script src="main.js?1464187810951"></script>
+<script>
 var canvas, stage, exportRoot;
 function init() {
 	
-	$CJS_INIT
+	
+	canvas = document.getElementById("canvas");
+	exportRoot = new lib.ExtensionSample();
+
+	stage = new createjs.Stage(canvas);
+	stage.addChild(exportRoot);
+	stage.update();
+
+	createjs.Ticker.setFPS(lib.properties.fps);
+	createjs.Ticker.addEventListener("tick", stage);
 
 (function initForMobile(){
 	var w = window.innerWidth;
@@ -60,13 +71,13 @@ function init() {
 })();
 
 }
-$PLAYSOUND
-$SCRIPT_END
+
+</script>
 
 <!-- write your code here -->
 
 </head>
 <body onload="init();" style="background-color:#D4D4D4;margin:0px;">
-	<canvas id="$CANVAS_ID" width="$WT" height="$HT" style="background-color:$BG"></canvas>
+	<canvas id="canvas" width="375" height="667" style="background-color:#FFFFFF"></canvas>
 </body>
 </html>

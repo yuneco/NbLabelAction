@@ -2,11 +2,13 @@ var NbLabelAction = (function() {
 'use strict';
 	
 	var isInited		= false;
-	var regLabel		= /^(@click|[a-zA-Z][-_a-zA-Z0-9]*):([psm]\.|)(<<|<|\||>|[a-zA-Z][-_a-zA-Z0-9]*)$/;
+	var regLabel		= /^(@click|[a-zA-Z][-_a-zA-Z0-9]*):([psm]\.|)(<<|<|\||>|#?.*)$/;
+	var regExtension	= /^#([a-zA-Z0-9][-_a-zA-Z0-9]*)(|\(([^)]*)\))$/;
 	var BASENAME_CLICK	= '@click';
 	var TARGET_PARENT	= 'p.';
 	var TARGET_STAGE	= 's.';
 	var TARGET_ME		= 'm.'
+	var EXTEND_SIGN		= '#'
 	var ACTION_HEAD		= '<';
 	var ACTION_STOP		= '|';
 	var ACTION_NEXT		= '>';
@@ -140,6 +142,7 @@ var NbLabelAction = (function() {
 		 */
 		,doAction		:	function(mc){
 			var targetMc		= mc;
+			var labelToGo,extendPart,extFName,extFParam,extRet;
 			if(this.target == TARGET_PARENT){targetMc	= mc.parent}
 			if(this.target == TARGET_STAGE){targetMc	= stage.children[0]}
 			switch (this.action) {
@@ -156,12 +159,36 @@ var NbLabelAction = (function() {
 					targetMc.stop();
 					break;
 				default:
-					var labelToGo		= findLabelWithBase(targetMc,this.action);
+					if(this.action.charAt(0) == EXTEND_SIGN){
+						// 拡張メソッドの呼び出し
+						extendPart		= this.action.match(regExtension);
+						if(extendPart){
+							extFName		= extendPart[1];
+							extFParam		= extendPart[3];
+							if(NbLabelAction.extension[extFName]){
+								extRet			= NbLabelAction.extension[extFName].apply(targetMc,[extFParam]);
+								labelToGo		= findLabelWithBase(targetMc,extRet);
+								if(extRet && !labelToGo){
+									console.warn("extension : " + extFName + " return value:" + extRet + ". But it is " ,mc);
+								}
+							}else{
+								console.warn("invalid label : extension " + extFName + " is not defined.",this.action,mc);
+							}
+						}else{
+							console.warn("invalid label format: " + this.action,mc);
+						}
+					}else{
+						labelToGo		= findLabelWithBase(targetMc,this.action);
+						if(!labelToGo){
+							console.warn("label not found : " + this.action,mc);
+						}
+					}
+					
+					//ラベルへのジャンプ
 					if(labelToGo){
 						targetMc.gotoAndPlay(labelToGo);
-					}else{
-						console.warn("label not found : " + this.action,mc);
 					}
+					
 			}
 		}
 		
@@ -171,6 +198,11 @@ var NbLabelAction = (function() {
 	// --------- NbLabelAction --------- //
 
 	return {
+		/**
+		 * ステージ上の全てのMovieClipを巡回してアクションラベルを初期化します。
+		 * この処理は通常、ステージのロードまたはステージ1フレーム目のアクションから呼び出します。
+		 * 2回目以降の呼び出しに対しては何も行いません。
+		 */
 		init			:	 function(){
 			if(isInited){return}
 			isInited = true;
@@ -192,10 +224,11 @@ var NbLabelAction = (function() {
 						label2action[label]	= la;
 						//イベントラベル
 						if(la.baseName == BASENAME_CLICK){
-							mc.addEventListener('click',function(){
+							mc.addEventListener('click',function(mc,label,evt){
 								mc.gotoAndPlay(label);
+								evt.stopPropagation();
 								isDebug?console.log("gotoAndPlay:",label):null;
-							});
+							}.bind(this,mc,label));
 						}
 					}
 					
@@ -243,6 +276,25 @@ var NbLabelAction = (function() {
 			}
 			walkMcTree(root);
 			checkedMcs.length	= 0;
+		}
+		
+		/**
+		 * 拡張スクリプトをセットするオブジェクトです。
+		 * 初期状態では何もセットされていません。
+		 * この名前空間に任意の関数をセットすることで、アクションラベルから任意の処理を呼び出せるようになります。
+		 * 設定形式：
+		 * NbLabelAction.extension.myfunc = function...
+		 * コンテキスト：
+		 * 実行時のthisはアクションラベルで指定されたMovieClipです。
+		 * ラベルを記載したMovieClip自体・タイムライン上の親MovieClip・stageのいずれかです。
+		 * ラベルのフォーマット：
+		 * 		labelName:(target.)#myfunc
+		 * 		labelName:(target.)#myfunc(param)
+		 * ラベルに直接引数を書くことができます。この場合、引数は"("から")"まで全てが単一の
+		 * 文字列としてmyfuncの第一引数に渡されます。現状引数中に")"を含める方法はありません。
+		 */
+		,extension		: {
+			
 		}
 		
 	};
