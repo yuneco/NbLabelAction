@@ -1,91 +1,74 @@
-# これは何？
+# What this？
 
-+ AnimateCC(旧Flash)でhtml5出力する際に使うJavaScriptライブラリです
-+ 簡単なクリック制御/アニメーション制御をプログラミングなしで実現します
-+ 主に非プログラマなイラストレーター/デザイナが「動く絵本」レベルの作品を制作する際に使用することを想定しています
++ NbLabelAction is small JavaScript library for AnimateCC(FlashCC).
++ You can control your timeline by frame labels without any action or script.
++ Main target of this tool are designers and illustrators who is not familiar with scripting.
 
-# 導入方法
+# Get started
 
-## 簡単な方法
-+ 右上の「download zip」を押してファイル一式をダウンロード
-+ templateフォルダに設定済みのflaファイルがあるので、これを雛形に制作してください
-+ flaを開いたら、Cmd(Ctrl)+Enterで普通にパブリッシュプレビューしてください。ブラウザが開いて、簡単なページ送りのデモが確認できるはずです
-+ 不要なデモ用コンテンツを削除して、あとは自由に制作してください
++ click "download zip" and dlownload all files.
++ open "TemplateIphone.fla" in template folder.
++ press Cmd(Ctrl)+Enter for preview. sample contents will be shown in your browser.
++ delete sample contents and create what you want.
 
-## もうちょっとちゃんとした説明
-テンプレートを使用しない場合、下記の手順に従ってください：
 
-1. 新規ドキュメントから「HTML5 Canvas」を作成
-1. パブリッシュ設定＞詳細を開いてhtmlのテンプレートに同梱の「template.html」を設定
-1. 適当に保存して、一旦パブリッシュ
-1. 生成されたhtmlファイルと同じ階層に「NbLabelAction.js」をコピー
+# How to control timeline
+Add frame labels to control animation.
 
-補足：
+## example
+![SAMPLE](https://github.com/yuneco/NbLabelAction/blob/master/example/sample_img1.png)
++ start with first frame (label : top) normally.
++ at the end of label section(15 frame), back to head of label 'top'. (= loop 1-15 frame)
++ if this moveiclip is clicked, goto '@click'.
++ at the end of label section(26 frame), back to head of label 'top'.
 
-以前のバージョンで1フレーム目に必須だった下記のスクリプトは不要になりました（template.htmlに記載を移動しています）
-
-```javascript
-NbLabelAction.init();
-```
-
-# アニメーションの制御方法
-すべてのアニメーションはフレームにラベルをつけることで制御します。
-
-## とりあえず、例
-![サンプル](https://github.com/yuneco/NbLabelAction/blob/master/example/sample_img1.png)
-+ 普通に1フレーム目(ラベル：top)から再生開始
-+ ラベル：topの最後（15フレーム目）まで来たらtopの先頭に戻る
-+ クリックされたらラベル：@clickに飛ぶ
-+ ラベル：@clickの最後（26フレーム目）まで来たらtopに飛ぶ
-
-## ラベルの形式
-制御用のラベル（以下、アクションラベルと呼びます）は下記の形式で記載します：
+## labe format
+Labels that control timeline is called 'action label'.
 ``` 
-ラベル名:アクション 
+labelName:action 
 ```
-例：
+example:
 ```
 PiyoPiyo:<
 MiyaoMiyao:s.>
 @click:s.PiyoPiyo
 ```
-これらは全て有効なアクションラベルです。
 
-### ラベル名
-ラベル名はラベルを識別するための名前です。半角英数字（1文字目はアルファベットのみ可）で命名してください。
+### labelName
+labelName is name of this label. You can only use alphabets and digits (first charactor must be alphabet).
 
-### 「@click」ラベル名
-ラベル名として「@click」を指定すると、クリック時に自動的にこのラベルの位置にジャンプするようになります。
+### labelName : @click
+'@click' is special label name. If the timeline has this label, animation is jump to there when you click(or tap) the element.
 
-### アクション
-アクションは *** 「そのラベルのフレームの最後に到達した時に実行すること」 *** を指定します。アクションには以下の種類があります。
+### action
+action part specify what to do when the animation reach to the end of label section. Following keywords are allowed:
 
-|アクション|意味|例|
+|action|mean|example|
 |:--:|:--:|:--:|
-|\||停止|PlayOnce: \||
-|>|次のラベルへ移動|Next:>|
-|<|ラベルの先頭に戻る＝ループする|LoopMe:<|
-|<<|一つ前のラベルへ移動|Back:<|
-|ラベル名|「ラベル名」の位置に移動|@click:Next|
+|\||stop|PlayOnce: \||
+|>|goto(and play) next label|Next:>|
+|<|back to the head of this label (= loop)|LoopMe:<|
+|<<|goto(and play) prev label|Back:<|
+|labelName|goto(and play) specified label|@click:Next|
 
-アクションには操作対象として「親」または「ステージ」を指定するとこができます。
+You can specify the target of action optionally.
 
-|対象|対象の意味|例|例の意味|
+|target|mean|example|explanation|
 |:--:|:--|:--|:--|
-|p.|親|@click:p.>|クリック時にここから再生し、最後まで到達したら、親タイムラインを次のラベル位置に進める（=ページ送り的な使い方）|
-|s.|ステージ|@click:s.FirstPage|クリック時にここから再生し、最後まで到達したら、ステージの「FirstPage」に移動する（ホームボタン的な使い方）|
+|p.|parent|@click:p.>|play by click and have parent moveiclip jump to next label (like pagination button) |
+|s.|stage|@click:s.FirstPage|play by click and have stage timeline jump to the 'FirstPage' label (like home button) |
 
-### 拡張アクション
-JavaScriptを使って、任意のアクションを追加することができます。拡張アクションはNbLabelAction.extendの下に定義します。
-以下の点に注意してください：
+### extend action
+If you can use javascript, you can extend default action. 
+To add extend action, add function under `NbLabelAction.extend` .
 
-+ アクションラベルから呼び出す際に「( )」でくくって引数を指定できますが、JavaScript側には ***カッコ内の文字列がそのまま*** 引渡されます
-+ thisは処理対象のMovieClipです（s.またはp.が指定された場合はステージや親のMovieClipになる点に注意してください）
-+ 関数からの戻り値はラベル名として解釈され、ラベルが存在する場合はそこに移動(gotoAndPlay)します。関数内で別なラベルにジャンプしたり停止したりする場合は何も値を返さないようにします
++ On the timeline, user can write param using '( )' like 'func(a,b,c)'. In the js function, all params are passed as a single string like 'a,b,c'.
++ Context('this') is target movieclip.
++ If the function return value, the framework deals it as a labelName and try to gotoAndPlay there.
 
-拡張アクションの例です：
+Example of extend action:
 
-例：引数で指定されたラベルのどれかにランダムで飛ぶ拡張アクションの定義
+example: jump to specified label randomly.
 ```javascript
 NbLabelAction.extension.select  = function(param){
 	if(!param){return}
@@ -93,9 +76,9 @@ NbLabelAction.extension.select  = function(param){
 	return labels[Math.floor(Math.random() * labels.length)];
 };
 ```
-これは、以下のようにしてアクションラベルとして使用できます：
+On the timeline you can write...
 
-例：引数で指定されたラベルのどれかにランダムで飛ぶ
+example: jump to specified label randomly.
 ```
 @click:#select(labe1A,labelB,labelC)
 ```
@@ -104,10 +87,10 @@ NbLabelAction.extension.select  = function(param){
 
 
 
-# ライセンス
+# Licence
 MIT
 
 
-# 連絡先
+# Contact
 + twitter : @yuneco
 + mail : info@nekobooks.com
